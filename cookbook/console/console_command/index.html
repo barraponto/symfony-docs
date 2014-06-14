@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Como criar um Comando de Console &mdash; Symfony2 Framework Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Symfony2 Framework Documentation  documentation" href="../../../" />
+    <link rel="up" title="Console" href="../" />
+    <link rel="next" title="Como usar o Console" href="../usage/" />
+    <link rel="prev" title="Console" href="../" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../usage/" title="Como usar o Console"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Console"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" accesskey="U">Console</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="como-criar-um-comando-de-console">
+<span id="index-0"></span><h1>Como criar um Comando de Console<a class="headerlink" href="#como-criar-um-comando-de-console" title="Permalink to this headline">¶</a></h1>
+<p>A página Console na seção Componentes (<a class="reference internal" href="../../../components/console/introduction/"><em>O Componente Console</em></a>) aborda
+como criar um comando de Console. Este artigo do cookbook abrange as diferenças
+ao criar comandos do Console com o framework Symfony2.</p>
+<div class="section" id="registrando-os-comandos-automaticamente">
+<h2>Registrando os Comandos Automaticamente<a class="headerlink" href="#registrando-os-comandos-automaticamente" title="Permalink to this headline">¶</a></h2>
+<p>Para disponibilizar os comandos de console automaticamente com o Symfony2, adicione um
+diretório <tt class="docutils literal"><span class="pre">Command</span></tt> dentro de seu bundle e crie um arquivo php com o sufixo
+<tt class="docutils literal"><span class="pre">Command.php</span></tt> para cada comando que você deseja fornecer. Por exemplo, se você
+deseja estender o <tt class="docutils literal"><span class="pre">AcmeDemoBundle</span></tt> (disponível na Edição Standard do Symfony)
+para cumprimentar-nos a partir da linha de comando, crie o <tt class="docutils literal"><span class="pre">GreetCommand.php</span></tt>
+e adicione o seguinte código:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/DemoBundle/Command/GreetCommand.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\DemoBundle\Command</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputArgument</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputInterface</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputOption</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Output\OutputInterface</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">GreetCommand</span> <span class="k">extends</span> <span class="nx">ContainerAwareCommand</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="k">function</span> <span class="nf">configure</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span>
+            <span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">setDescription</span><span class="p">(</span><span class="s1">&#39;Greet someone&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">addArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nx">InputArgument</span><span class="o">::</span><span class="na">OPTIONAL</span><span class="p">,</span> <span class="s1">&#39;Who do you want to greet?&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">addOption</span><span class="p">(</span><span class="s1">&#39;yell&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="nx">InputOption</span><span class="o">::</span><span class="na">VALUE_NONE</span><span class="p">,</span> <span class="s1">&#39;If set, the task will yell in uppercase letters&#39;</span><span class="p">)</span>
+        <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">InputInterface</span> <span class="nv">$input</span><span class="p">,</span> <span class="nx">OutputInterface</span> <span class="nv">$output</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$name</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="s1">&#39;Hello &#39;</span><span class="o">.</span><span class="nv">$name</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="s1">&#39;Hello&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getOption</span><span class="p">(</span><span class="s1">&#39;yell&#39;</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$text</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="nv">$text</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Este comando estará disponível automaticamente para executar:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien
+</pre></div>
+</div>
+</div>
+<div class="section" id="testando-comandos">
+<h2>Testando Comandos<a class="headerlink" href="#testando-comandos" title="Permalink to this headline">¶</a></h2>
+<p>Ao testar os comandos utilizados como parte do framework completo <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Bundle/FrameworkBundle/Console/Application.html" title="Symfony\Bundle\FrameworkBundle\Console\Application"><span class="pre">Application</span></a></tt>
+deve ser usado em vez de <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Application.html" title="Symfony\Component\Console\Application"><span class="pre">Application</span></a></tt>:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">use</span> <span class="nx">Symfony\Component\Console\Tester\CommandTester</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Bundle\FrameworkBundle\Console\Application</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Acme\DemoBundle\Command\GreetCommand</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ListCommandTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testExecute</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// mock the Kernel or create one depending on your needs</span>
+        <span class="nv">$application</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">(</span><span class="nv">$kernel</span><span class="p">);</span>
+        <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="k">new</span> <span class="nx">GreetCommand</span><span class="p">());</span>
+
+        <span class="nv">$command</span> <span class="o">=</span> <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">);</span>
+        <span class="nv">$commandTester</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CommandTester</span><span class="p">(</span><span class="nv">$command</span><span class="p">);</span>
+        <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;command&#39;</span> <span class="o">=&gt;</span> <span class="nv">$command</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">()));</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertRegExp</span><span class="p">(</span><span class="s1">&#39;/.../&#39;</span><span class="p">,</span> <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">getDisplay</span><span class="p">());</span>
+
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="obtendo-servicos-do-container-de-servicos">
+<h2>Obtendo Serviços do Container de Serviços<a class="headerlink" href="#obtendo-servicos-do-container-de-servicos" title="Permalink to this headline">¶</a></h2>
+<p>Usando <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Bundle/FrameworkBundle/Command/ContainerAwareCommand.html" title="Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand"><span class="pre">ContainerAwareCommand</span></a></tt>
+como classe base para o comando (em vez do mais básico
+<tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Command/Command.html" title="Symfony\Component\Console\Command\Command"><span class="pre">Command</span></a></tt>), você tem acesso ao
+container de serviço. Em outras palavras, você tem acesso a qualquer serviço configurado.
+Por exemplo, você pode facilmente estender a tarefa para a mesma ser traduzível:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">protected</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">InputInterface</span> <span class="nv">$input</span><span class="p">,</span> <span class="nx">OutputInterface</span> <span class="nv">$output</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$name</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+    <span class="nv">$translator</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getContainer</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;translator&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="nv">$translator</span><span class="o">-&gt;</span><span class="na">trans</span><span class="p">(</span><span class="s1">&#39;Hello %name%!&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;%name%&#39;</span> <span class="o">=&gt;</span> <span class="nv">$name</span><span class="p">)));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="nv">$translator</span><span class="o">-&gt;</span><span class="na">trans</span><span class="p">(</span><span class="s1">&#39;Hello!&#39;</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Como criar um Comando de Console</a><ul>
+<li><a class="reference internal" href="#registrando-os-comandos-automaticamente">Registrando os Comandos Automaticamente</a></li>
+<li><a class="reference internal" href="#testando-comandos">Testando Comandos</a></li>
+<li><a class="reference internal" href="#obtendo-servicos-do-container-de-servicos">Obtendo Serviços do Container de Serviços</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../"
+                        title="previous chapter">Console</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../usage/"
+                        title="next chapter">Como usar o Console</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/cookbook/console/console_command.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../usage/" title="Como usar o Console"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Console"
+             >previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" >Console</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Como trabalhar com Múltiplos Gerenciadores de Entidade &mdash; Symfony2 Framework Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Symfony2 Framework Documentation  documentation" href="../../../" />
+    <link rel="up" title="Doctrine" href="../" />
+    <link rel="next" title="Como Registrar Funções DQL Personalizadas" href="../custom_dql_functions/" />
+    <link rel="prev" title="Como gerar Entidades de uma base de dados existente" href="../reverse_engineering/" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../custom_dql_functions/" title="Como Registrar Funções DQL Personalizadas"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../reverse_engineering/" title="Como gerar Entidades de uma base de dados existente"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" accesskey="U">Doctrine</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="como-trabalhar-com-multiplos-gerenciadores-de-entidade">
+<span id="index-0"></span><h1>Como trabalhar com Múltiplos Gerenciadores de Entidade<a class="headerlink" href="#como-trabalhar-com-multiplos-gerenciadores-de-entidade" title="Permalink to this headline">¶</a></h1>
+<p>Você pode usar múltiplos gerenciadores de entidades em uma aplicação Symfony2. Isto é
+necessário se você está usando bancos de dados diferentes ou algum vendor com conjuntos de
+entidades completamente diferentes. Em outras palavras, um gerenciador de entidades que
+conecta em um banco de dados manipulará algumas entidades enquanto um outro gerenciador de
+entidades que conecta a um outro banco de dados irá manupular as entidades restantes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Usar múltiplos gerenciadores de entidade é muito fácil, mas mais avançado e
+geralmente não necessário. Certifique se você realmente precisa de múltiplos
+gerenciadores de entidades antes de adicionar esta camada de complexibilidade.</p>
+</div>
+<p>O código de configuração seguinte mostra como configurar dois gerenciadores de entidade:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">doctrine</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">orm</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">default_entity_manager</span><span class="p-Indicator">:</span>   <span class="l-Scalar-Plain">default</span>
+        <span class="l-Scalar-Plain">entity_managers</span><span class="p-Indicator">:</span>
+            <span class="l-Scalar-Plain">default</span><span class="p-Indicator">:</span>
+                <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span>       <span class="l-Scalar-Plain">default</span>
+                <span class="l-Scalar-Plain">mappings</span><span class="p-Indicator">:</span>
+                    <span class="l-Scalar-Plain">AcmeDemoBundle</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">~</span>
+                    <span class="l-Scalar-Plain">AcmeStoreBundle</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">~</span>
+            <span class="l-Scalar-Plain">customer</span><span class="p-Indicator">:</span>
+                <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span>       <span class="l-Scalar-Plain">customer</span>
+                <span class="l-Scalar-Plain">mappings</span><span class="p-Indicator">:</span>
+                    <span class="l-Scalar-Plain">AcmeCustomerBundle</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">~</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>Neste caso, você deve definir dois gerenciadores de entidade e chamá-los de
+<tt class="docutils literal"><span class="pre">default</span></tt> e <tt class="docutils literal"><span class="pre">customer</span></tt>. O gerenciador de entidade <tt class="docutils literal"><span class="pre">default</span></tt> manipula as
+entidades em <tt class="docutils literal"><span class="pre">AcmeDemoBundle</span></tt> e <tt class="docutils literal"><span class="pre">AcmeStoreBundle</span></tt>, enquanto o gerenciador
+de entidades <tt class="docutils literal"><span class="pre">customer</span></tt> manipula as entidades <tt class="docutils literal"><span class="pre">AcmeCustomerBundle</span></tt>.</p>
+<p>Quando estiver trabalhando com múltiplos gerenciadores de entidade, você deve ser explícito
+sobre qual gerenciador de entidade você quer. Se você <em>omitir</em> o nome do gerenciador de
+entidade quando você atualizar o seu schema, será usado o padrão (ou seja, <tt class="docutils literal"><span class="pre">default</span></tt>):</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1"># Play only with &quot;default&quot; mappings</span>
+<span class="nx">php</span> <span class="nx">app</span><span class="o">/</span><span class="nx">console</span> <span class="nx">doctrine</span><span class="o">:</span><span class="nx">schema</span><span class="o">:</span><span class="nx">update</span> <span class="o">--</span><span class="nx">force</span>
+
+<span class="c1"># Play only with &quot;customer&quot; mappings</span>
+<span class="nx">php</span> <span class="nx">app</span><span class="o">/</span><span class="nx">console</span> <span class="nx">doctrine</span><span class="o">:</span><span class="nx">schema</span><span class="o">:</span><span class="nx">update</span> <span class="o">--</span><span class="nx">force</span> <span class="o">--</span><span class="nx">em</span><span class="o">=</span><span class="nx">customer</span>
+</pre></div>
+</div>
+<p>Se você <em>omitir</em> o nome do gerenciador de entidade ao solicitar ele,
+o gerenciador de entidade padrão (ou seja, <tt class="docutils literal"><span class="pre">default</span></tt>) é retornado:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">class</span> <span class="nc">UserController</span> <span class="k">extends</span> <span class="nx">Controller</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">indexAction</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// both return the &quot;default&quot; em</span>
+        <span class="nv">$em</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getManager</span><span class="p">();</span>
+        <span class="nv">$em</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getManager</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">);</span>
+
+        <span class="nv">$customerEm</span> <span class="o">=</span>  <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getManager</span><span class="p">(</span><span class="s1">&#39;customer&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Agora você pode usar Doctrine exatamente da mesma forma que você fez antes -
+usando o gerenciador de entidade <tt class="docutils literal"><span class="pre">default</span></tt> para persistir e buscar as
+entidades que ele gerencia, e o gerenciador de entidade <tt class="docutils literal"><span class="pre">customer</span></tt> para
+persistir e buscar suas entidades.</p>
+<p>O mesmo se aplica para chamadas de repositório:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">class</span> <span class="nc">UserController</span> <span class="k">extends</span> <span class="nx">Controller</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">indexAction</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// Retrieves a repository managed by the &quot;default&quot; em</span>
+        <span class="nv">$products</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span>
+                         <span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;AcmeStoreBundle:Product&#39;</span><span class="p">)</span>
+                         <span class="o">-&gt;</span><span class="na">findAll</span><span class="p">();</span>
+
+        <span class="c1">// Explicit way to deal with the &quot;default&quot; em</span>
+        <span class="nv">$products</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span>
+                         <span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;AcmeStoreBundle:Product&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
+                         <span class="o">-&gt;</span><span class="na">findAll</span><span class="p">();</span>
+
+        <span class="c1">// Retrieves a repository managed by the &quot;customer&quot; em</span>
+        <span class="nv">$customers</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;doctrine&#39;</span><span class="p">)</span>
+                          <span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;AcmeCustomerBundle:Customer&#39;</span><span class="p">,</span> <span class="s1">&#39;customer&#39;</span><span class="p">)</span>
+                          <span class="o">-&gt;</span><span class="na">findAll</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../reverse_engineering/"
+                        title="previous chapter">Como gerar Entidades de uma base de dados existente</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../custom_dql_functions/"
+                        title="next chapter">Como Registrar Funções DQL Personalizadas</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/cookbook/doctrine/multiple_entity_managers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../custom_dql_functions/" title="Como Registrar Funções DQL Personalizadas"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../reverse_engineering/" title="Como gerar Entidades de uma base de dados existente"
+             >previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" >Doctrine</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

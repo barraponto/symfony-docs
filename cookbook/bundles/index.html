@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Bundles &mdash; Symfony2 Framework Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Symfony2 Framework Documentation  documentation" href="../../" />
+    <link rel="up" title="Cookbook" href="../" />
+    <link rel="next" title="Como usar Melhores Práticas para a Estruturação dos Bundles" href="best_practices/" />
+    <link rel="prev" title="Como usar o Apache Router" href="../configuration/apache_router/" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="best_practices/" title="Como usar Melhores Práticas para a Estruturação dos Bundles"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../configuration/apache_router/" title="Como usar o Apache Router"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../" accesskey="U">Cookbook</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="bundles">
+<h1>Bundles<a class="headerlink" href="#bundles" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="best_practices/">Como usar Melhores Práticas para a Estruturação dos Bundles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#nome-do-bundle">Nome do Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#estrutura-de-diretorios">Estrutura de Diretórios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#vendors">Vendors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#testes">Testes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#documentacao">Documentação</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#controladores">Controladores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#roteamento">Roteamento</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#templates">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#arquivos-de-traducao">Arquivos de Tradução</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#configuracao">Configuração</a></li>
+<li class="toctree-l2"><a class="reference internal" href="best_practices/#aprenda-mais-no-cookbook">Aprenda mais no Cookbook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inheritance/">Como usar herança para substituir partes de um Bundle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inheritance/#substituindo-controladores">Substituindo controladores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance/#substituindo-recursos-templates-rotas-traducoes-validacao-etc">Substituindo recursos: Templates, Rotas, Traduções, Validação, etc</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="override/">Como Sobrescrever qualquer parte de um Bundle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="override/#templates">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#roteamento">Roteamento</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#controladores">Controladores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#servicos-e-configuracao">Serviços e Configuração</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#entidades-e-mapeamento-de-entidade">Entidades e Mapeamento de Entidade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#formularios">Formulários</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#validacao-de-metadados">Validação de Metadados</a></li>
+<li class="toctree-l2"><a class="reference internal" href="override/#traducoes">Traduções</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extension/">Como expor uma Configuração Semântica para um Bundle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extension/#criando-uma-classe-extension">Criando uma Classe Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extension/#fazendo-o-parse-do-array-configs">Fazendo o parse do array <tt class="docutils literal"><span class="pre">$configs</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="extension/#usando-o-metodo-load">Usando o Método <tt class="docutils literal"><span class="pre">load()</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="extension/#validacao-e-merging-com-uma-classe-de-configuracao">Validação e Merging com uma Classe de Configuração</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extension/#convencoes-de-extensao">Convenções de Extensão</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../configuration/apache_router/"
+                        title="previous chapter">Como usar o Apache Router</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="best_practices/"
+                        title="next chapter">Como usar Melhores Práticas para a Estruturação dos Bundles</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/cookbook/bundles/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="best_practices/" title="Como usar Melhores Práticas para a Estruturação dos Bundles"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../configuration/apache_router/" title="Como usar o Apache Router"
+             >previous</a> |</li>
+        <li><a href="../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../" >Cookbook</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

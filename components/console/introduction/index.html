@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>O Componente Console &mdash; Symfony2 Framework Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Symfony2 Framework Documentation  documentation" href="../../../" />
+    <link rel="up" title="Console" href="../" />
+    <link rel="next" title="Documentos de Referência" href="../../../reference/" />
+    <link rel="prev" title="Console" href="../" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../reference/" title="Documentos de Referência"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Console"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Os Componentes</a> &raquo;</li>
+          <li><a href="../" accesskey="U">Console</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="o-componente-console">
+<span id="index-0"></span><h1>O Componente Console<a class="headerlink" href="#o-componente-console" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div>O componente Console facilita a criação de interfaces de linha de comando bonitas
+e testáveis.</div></blockquote>
+<p>O componente Console permite a criação dos seus próprios comandos de linha de comando.
+Seus comandos do console podem ser usados ​​para qualquer tarefa recorrente, como cronjobs,
+importações ou outros trabalhos realizados em lote.</p>
+<div class="section" id="instalacao">
+<h2>Instalação<a class="headerlink" href="#instalacao" title="Permalink to this headline">¶</a></h2>
+<p>Você pode instalar o componente de várias formas diferentes:</p>
+<ul class="simple">
+<li>Usando o repositório Git oficial (<a class="reference external" href="https://github.com/symfony/Console">https://github.com/symfony/Console</a>);</li>
+<li>Instalando via PEAR (<cite>pear.symfony.com/Console</cite>);</li>
+<li>Instalando via Composer (<cite>symfony/console</cite> on Packagist).</li>
+</ul>
+</div>
+<div class="section" id="criando-um-comando-basico">
+<h2>Criando um comando básico<a class="headerlink" href="#criando-um-comando-basico" title="Permalink to this headline">¶</a></h2>
+<p>Para fazer um comando de console que nos cumprimenta na linha de comando, crie o <tt class="docutils literal"><span class="pre">GreetCommand.php</span></tt>
+e adicione o seguinte código nele:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">namespace</span> <span class="nx">Acme\DemoBundle\Command</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Command\Command</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputArgument</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputInterface</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Input\InputOption</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Output\OutputInterface</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">GreetCommand</span> <span class="k">extends</span> <span class="nx">Command</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="k">function</span> <span class="nf">configure</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span>
+            <span class="o">-&gt;</span><span class="na">setName</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">setDescription</span><span class="p">(</span><span class="s1">&#39;Greet someone&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">addArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nx">InputArgument</span><span class="o">::</span><span class="na">OPTIONAL</span><span class="p">,</span> <span class="s1">&#39;Who do you want to greet?&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">addOption</span><span class="p">(</span><span class="s1">&#39;yell&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="nx">InputOption</span><span class="o">::</span><span class="na">VALUE_NONE</span><span class="p">,</span> <span class="s1">&#39;If set, the task will yell in uppercase letters&#39;</span><span class="p">)</span>
+        <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">InputInterface</span> <span class="nv">$input</span><span class="p">,</span> <span class="nx">OutputInterface</span> <span class="nv">$output</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$name</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="s1">&#39;Hello &#39;</span><span class="o">.</span><span class="nv">$name</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="s1">&#39;Hello&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getOption</span><span class="p">(</span><span class="s1">&#39;yell&#39;</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$text</span> <span class="o">=</span> <span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$text</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="nv">$text</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Você também precisa criar o arquivo para ser executado na linha de comando que cria
+uma <tt class="docutils literal"><span class="pre">Application</span></tt> e adicionar comandos à ele:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">#!/usr/bin/env php</span>
+<span class="c1"># app/console</span>
+<span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="k">use</span> <span class="nx">Acme\DemoBundle\Command\GreetCommand</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Application</span><span class="p">;</span>
+
+<span class="nv">$application</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
+<span class="nv">$application</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="k">new</span> <span class="nx">GreetCommand</span><span class="p">);</span>
+<span class="nv">$application</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Teste o novo comando de console executando o seguinte</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien
+</pre></div>
+</div>
+<p>Isto irá imprimir o seguinte na linha de comando:</p>
+<div class="highlight-text"><div class="highlight"><pre>Hello Fabien
+</pre></div>
+</div>
+<p>Você também pode usar a opção <tt class="docutils literal"><span class="pre">--yell</span></tt> para converter tudo em letras maiúsculas:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien --yell
+</pre></div>
+</div>
+<p>Irá mostrar:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nx">HELLO</span> <span class="nx">FABIEN</span>
+</pre></div>
+</div>
+<div class="section" id="colorindo-a-saida">
+<h3>Colorindo a saída<a class="headerlink" href="#colorindo-a-saida" title="Permalink to this headline">¶</a></h3>
+<p>Sempre que a saída for um texto, você pode envolvê-lo com tags para colorir a sua
+saída. Por exemplo:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// green text</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="s1">&#39;&lt;info&gt;foo&lt;/info&gt;&#39;</span><span class="p">);</span>
+
+<span class="c1">// yellow text</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="s1">&#39;&lt;comment&gt;foo&lt;/comment&gt;&#39;</span><span class="p">);</span>
+
+<span class="c1">// black text on a cyan background</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="s1">&#39;&lt;question&gt;foo&lt;/question&gt;&#39;</span><span class="p">);</span>
+
+<span class="c1">// white text on a red background</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="s1">&#39;&lt;error&gt;foo&lt;/error&gt;&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>É possível definir os seus próprios estilos usando a classe
+<tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Formatter/OutputFormatterStyle.html" title="Symfony\Component\Console\Formatter\OutputFormatterStyle"><span class="pre">OutputFormatterStyle</span></a></tt>:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$style</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OutputFormatterStyle</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="s1">&#39;blink&#39;</span><span class="p">));</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">getFormatter</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">setStyle</span><span class="p">(</span><span class="s1">&#39;fire&#39;</span><span class="p">,</span> <span class="nv">$style</span><span class="p">);</span>
+<span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="s1">&#39;&lt;fire&gt;foo&lt;/fire&gt;&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>As cores de primeiro plano e de fundo disponíveis são: <tt class="docutils literal"><span class="pre">black</span></tt>, <tt class="docutils literal"><span class="pre">red</span></tt>, <tt class="docutils literal"><span class="pre">green</span></tt>,
+<tt class="docutils literal"><span class="pre">yellow</span></tt>, <tt class="docutils literal"><span class="pre">blue</span></tt>, <tt class="docutils literal"><span class="pre">magenta</span></tt>, <tt class="docutils literal"><span class="pre">cyan</span></tt> e <tt class="docutils literal"><span class="pre">white</span></tt>.</p>
+<p>E as opções disponíveis são: <tt class="docutils literal"><span class="pre">bold</span></tt>, <tt class="docutils literal"><span class="pre">underscore</span></tt>, <tt class="docutils literal"><span class="pre">blink</span></tt>, <tt class="docutils literal"><span class="pre">reverse</span></tt> e <tt class="docutils literal"><span class="pre">conceal</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="usando-argumentos-de-comando">
+<h2>Usando argumentos de comando<a class="headerlink" href="#usando-argumentos-de-comando" title="Permalink to this headline">¶</a></h2>
+<p>A parte mais interessante dos comandos são os argumentos e opções que você pode
+disponibilizar. Argumentos são as strings - separados por espaços - que
+vem após o nome do comando. Eles são ordenados, e podem ser opcionais ou
+obrigatórios. Por exemplo, adicione um argumento opcional <tt class="docutils literal"><span class="pre">last_name</span></tt> ao comando
+e torne o argumento <tt class="docutils literal"><span class="pre">name</span></tt> obrigatório:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$this</span>
+    <span class="c1">// ...</span>
+    <span class="o">-&gt;</span><span class="na">addArgument</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nx">InputArgument</span><span class="o">::</span><span class="na">REQUIRED</span><span class="p">,</span> <span class="s1">&#39;Who do you want to greet?&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">addArgument</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="nx">InputArgument</span><span class="o">::</span><span class="na">OPTIONAL</span><span class="p">,</span> <span class="s1">&#39;Your last name?&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Agora, você tem acesso a um argumento <tt class="docutils literal"><span class="pre">last_name</span></tt> no seu comando:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">if</span> <span class="p">(</span><span class="nv">$lastName</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getArgument</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nv">$text</span> <span class="o">.=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="nv">$lastName</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>O comando pode agora ser usado em qualquer uma das seguintes formas:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien
+<span class="nv">$ </span>app/console demo:greet Fabien Potencier
+</pre></div>
+</div>
+</div>
+<div class="section" id="utilizando-opcoes-de-comando">
+<h2>Utilizando opções de comando<a class="headerlink" href="#utilizando-opcoes-de-comando" title="Permalink to this headline">¶</a></h2>
+<p>Ao contrário dos argumentos, as opções não são ordenadas (ou seja, você pode especificá-las
+em qualquer ordem) e são especificadas com dois traços (ex., <tt class="docutils literal"><span class="pre">--yell</span></tt> - você também pode
+declarar um atalho de uma letra que pode chamar com um traço único, como
+<tt class="docutils literal"><span class="pre">-y</span></tt>). As opções são <em>sempre</em> opcionais, e podem ser configuradas para aceitar um valor
+(ex. <tt class="docutils literal"><span class="pre">dir=src</span></tt>) ou simplesmente como um sinalizador booleano sem um valor (ex.
+<tt class="docutils literal"><span class="pre">yell</span></tt>).</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Também é possível fazer uma opção <em>opcionalmente</em> aceitar um valor (de modo que
+<tt class="docutils literal"><span class="pre">--yell</span></tt> ou <tt class="docutils literal"><span class="pre">yell=loud</span></tt> funcionem). Opções também podem ser configuradas para
+aceitar um array de valores.</p>
+</div>
+<p>Por exemplo, adicione uma nova opção ao comando que pode ser usada para especificar
+quantas vezes a mensagem deve ser impressa:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$this</span>
+    <span class="c1">// ...</span>
+    <span class="o">-&gt;</span><span class="na">addOption</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="nx">InputOption</span><span class="o">::</span><span class="na">VALUE_REQUIRED</span><span class="p">,</span> <span class="s1">&#39;How many times should the message be printed?&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Em seguida, use o código abaixo no comando para imprimir a mensagem várias vezes:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">getOption</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">);</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$output</span><span class="o">-&gt;</span><span class="na">writeln</span><span class="p">(</span><span class="nv">$text</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Agora, quando executar a tarefa, você pode, opcionalmente, especificar uma flag
+<tt class="docutils literal"><span class="pre">--iterations</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien
+<span class="nv">$ </span>app/console demo:greet Fabien --iterations<span class="o">=</span>5
+</pre></div>
+</div>
+<p>O primeiro exemplo irá imprimir apenas uma vez, pois <tt class="docutils literal"><span class="pre">iterations</span></tt> está vazio e
+o padrão é <tt class="docutils literal"><span class="pre">1</span></tt> (o último argumento de <tt class="docutils literal"><span class="pre">addOption</span></tt>). O segundo exemplo
+irá imprimir cinco vezes.</p>
+<p>Lembre-se de que as opções não se importam com a ordem. Então, qualquer um dos seguintes
+comandos vai funcionar:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>app/console demo:greet Fabien --iterations<span class="o">=</span>5 --yell
+<span class="nv">$ </span>app/console demo:greet Fabien --yell --iterations<span class="o">=</span>5
+</pre></div>
+</div>
+<p>Existem quatro variantes de opções que você pode usar:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Opção</th>
+<th class="head">Valor</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>InputOption::VALUE_IS_ARRAY</td>
+<td>Esta opção aceita vários valores (ex. <tt class="docutils literal"><span class="pre">--dir=/foo</span> <span class="pre">--dir=/bar</span></tt>)</td>
+</tr>
+<tr class="row-odd"><td>InputOption::VALUE_NONE</td>
+<td>Não aceitar a entrada para esta opção (ex. <tt class="docutils literal"><span class="pre">--yell</span></tt>)</td>
+</tr>
+<tr class="row-even"><td>InputOption::VALUE_REQUIRED</td>
+<td>Este valor é obrigatório (ex. <tt class="docutils literal"><span class="pre">--iterations=5</span></tt>), a opção em si ainda é opcional</td>
+</tr>
+<tr class="row-odd"><td>InputOption::VALUE_OPTIONAL</td>
+<td>Esta opção pode ou não ter um valor (ex. <tt class="docutils literal"><span class="pre">yell</span></tt> ou <tt class="docutils literal"><span class="pre">yell=loud</span></tt>)</td>
+</tr>
+</tbody>
+</table>
+<p>Você pode combinar VALUE_IS_ARRAY com VALUE_REQUIRED ou VALUE_OPTIONAL como abaixo:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$this</span>
+    <span class="c1">// ...</span>
+    <span class="o">-&gt;</span><span class="na">addOption</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="nx">InputOption</span><span class="o">::</span><span class="na">VALUE_REQUIRED</span> <span class="o">|</span> <span class="nx">InputOption</span><span class="o">::</span><span class="na">VALUE_IS_ARRAY</span><span class="p">,</span> <span class="s1">&#39;How many times should the message be printed?&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="perguntando-ao-usuario-informacoes">
+<h2>Perguntando ao usuário informações<a class="headerlink" href="#perguntando-ao-usuario-informacoes" title="Permalink to this headline">¶</a></h2>
+<p>Ao criar comandos, você tem a possibilidade de coletar mais informações
+do usuário, fazendo-lhe perguntas. Por exemplo, suponha que você queira
+confirmar uma ação antes de executá-la. Adicione o seguinte ao seu
+comando:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$dialog</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getHelperSet</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;dialog&#39;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$dialog</span><span class="o">-&gt;</span><span class="na">askConfirmation</span><span class="p">(</span><span class="nv">$output</span><span class="p">,</span> <span class="s1">&#39;&lt;question&gt;Continue with this action?&lt;/question&gt;&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Neste caso, o usuário será perguntado &#8220;Continue with this action&#8221;, e, a menos
+que ele responda com <tt class="docutils literal"><span class="pre">y</span></tt>, a tarefa não irá executar. O terceiro argumento para
+<tt class="docutils literal"><span class="pre">askConfirmation</span></tt> é o valor padrão para retornar se o usuário não informar
+nenhuma entrada.</p>
+<p>Você também pode fazer perguntas com mais do que uma simples resposta sim/não. Por exemplo,
+se você precisa saber o nome de alguma coisa, você pode fazer o seguinte:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="nv">$dialog</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getHelperSet</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;dialog&#39;</span><span class="p">);</span>
+<span class="nv">$name</span> <span class="o">=</span> <span class="nv">$dialog</span><span class="o">-&gt;</span><span class="na">ask</span><span class="p">(</span><span class="nv">$output</span><span class="p">,</span> <span class="s1">&#39;Please enter the name of the widget&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testando-comandos">
+<h2>Testando Comandos<a class="headerlink" href="#testando-comandos" title="Permalink to this headline">¶</a></h2>
+<p>O Symfony2 fornece várias ferramentas para ajudar a testar os seus comandos. A mais
+útil é a classe <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Tester/CommandTester.html" title="Symfony\Component\Console\Tester\CommandTester"><span class="pre">CommandTester</span></a></tt>
+. Ela usa classes de entrada e saída especiais para facilitar o teste sem um console
+real:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">use</span> <span class="nx">Symfony\Component\Console\Application</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Tester\CommandTester</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Acme\DemoBundle\Command\GreetCommand</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ListCommandTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testExecute</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$application</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
+        <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="k">new</span> <span class="nx">GreetCommand</span><span class="p">());</span>
+
+        <span class="nv">$command</span> <span class="o">=</span> <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">);</span>
+        <span class="nv">$commandTester</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CommandTester</span><span class="p">(</span><span class="nv">$command</span><span class="p">);</span>
+        <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;command&#39;</span> <span class="o">=&gt;</span> <span class="nv">$command</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">()));</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertRegExp</span><span class="p">(</span><span class="s1">&#39;/.../&#39;</span><span class="p">,</span> <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">getDisplay</span><span class="p">());</span>
+
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>O método <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Tester/CommandTester.html#method_getDisplay" title="Symfony\Component\Console\Tester\CommandTester::getDisplay()"><span class="pre">getDisplay()</span></a></tt>
+retorna o que teria sido exibido durante uma chamada normal ao
+console.</p>
+<p>Você pode testar o envio de argumentos e opções para o comando, passando-os
+como um array para o método <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Tester/CommandTester.html#method_getDisplay" title="Symfony\Component\Console\Tester\CommandTester::getDisplay()"><span class="pre">getDisplay()</span></a></tt></p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">use</span> <span class="nx">Symfony\Component\Console\Application</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Console\Tester\CommandTester</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Acme\DemoBundle\Command\GreetCommand</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ListCommandTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testNameIsOutput</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$application</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
+        <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="k">new</span> <span class="nx">GreetCommand</span><span class="p">());</span>
+
+        <span class="nv">$command</span> <span class="o">=</span> <span class="nv">$application</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">);</span>
+        <span class="nv">$commandTester</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CommandTester</span><span class="p">(</span><span class="nv">$command</span><span class="p">);</span>
+        <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span>
+            <span class="k">array</span><span class="p">(</span><span class="s1">&#39;command&#39;</span> <span class="o">=&gt;</span> <span class="nv">$command</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">(),</span> <span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Fabien&#39;</span><span class="p">)</span>
+        <span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertRegExp</span><span class="p">(</span><span class="s1">&#39;/Fabien/&#39;</span><span class="p">,</span> <span class="nv">$commandTester</span><span class="o">-&gt;</span><span class="na">getDisplay</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Você também pode testar uma aplicação de console inteira usando
+<tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Tester/ApplicationTester.html" title="Symfony\Component\Console\Tester\ApplicationTester"><span class="pre">ApplicationTester</span></a></tt>.</p>
+</div>
+</div>
+<div class="section" id="chamando-um-comando-existente">
+<h2>Chamando um comando existente<a class="headerlink" href="#chamando-um-comando-existente" title="Permalink to this headline">¶</a></h2>
+<p>Se um comando depende que outro seja executado antes dele, em vez de pedir ao
+usuário para lembrar a ordem de execução, você mesmo pode chamá-lo diretamente.
+Isso também é útil se você quiser criar um comando &#8220;meta&#8221; que apenas executa
+vários outros comandos (por exemplo, todos os comandos que precisam ser executados
+quando código do projeto mudou nos servidores de produção: limpar o cache,
+gerar proxies do Doctrine2, realizar o dump dos assets do Assetic, ...).</p>
+<p>Chamar um comando a partir de outro é simples:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">protected</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">InputInterface</span> <span class="nv">$input</span><span class="p">,</span> <span class="nx">OutputInterface</span> <span class="nv">$output</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$command</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getApplication</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;demo:greet&#39;</span><span class="p">);</span>
+
+    <span class="nv">$arguments</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+        <span class="s1">&#39;command&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;demo:greet&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;name&#39;</span>    <span class="o">=&gt;</span> <span class="s1">&#39;Fabien&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--yell&#39;</span>  <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+    <span class="p">);</span>
+
+    <span class="nv">$input</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayInput</span><span class="p">(</span><span class="nv">$arguments</span><span class="p">);</span>
+    <span class="nv">$returnCode</span> <span class="o">=</span> <span class="nv">$command</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">(</span><span class="nv">$input</span><span class="p">,</span> <span class="nv">$output</span><span class="p">);</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Primeiro, você <tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Application.html#method_find" title="Symfony\Component\Console\Application::find()"><span class="pre">find()</span></a></tt> o
+comando que você deseja executar, passando o nome de comando.</p>
+<p>Em seguida, você precisa cria um novo
+<tt class="docutils literal"><a class="reference external" href="http://api.symfony.com/master/Symfony/Component/Console/Input/ArrayInput.html" title="Symfony\Component\Console\Input\ArrayInput"><span class="pre">ArrayInput</span></a></tt> com os argumentos e
+opções que você deseja passar para o comando.</p>
+<p>Eventualmente, chamando o método <tt class="docutils literal"><span class="pre">run()</span></tt> efetivamente executa o comando e
+retorna o código retornado pelo comando (valor de retorno do método
+<tt class="docutils literal"><span class="pre">execute()</span></tt> do comando).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Na maioria das vezes, chamando um comando a partir de código que não é executado
+na linha de comando não é uma boa idéia por várias razões. Primeiro, a saída do
+comando é otimizada para o console. Mas, mais importante, você pode pensar
+em um comando como sendo um controlador, que deve usar o modelo para fazer
+algo e exibir informações para o usuário. Assim, em vez de chamar um
+comando pela web, refatore o seu código e mova a lógica para um nova
+classe apropriada.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">O Componente Console</a><ul>
+<li><a class="reference internal" href="#instalacao">Instalação</a></li>
+<li><a class="reference internal" href="#criando-um-comando-basico">Criando um comando básico</a><ul>
+<li><a class="reference internal" href="#colorindo-a-saida">Colorindo a saída</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usando-argumentos-de-comando">Usando argumentos de comando</a></li>
+<li><a class="reference internal" href="#utilizando-opcoes-de-comando">Utilizando opções de comando</a></li>
+<li><a class="reference internal" href="#perguntando-ao-usuario-informacoes">Perguntando ao usuário informações</a></li>
+<li><a class="reference internal" href="#testando-comandos">Testando Comandos</a></li>
+<li><a class="reference internal" href="#chamando-um-comando-existente">Chamando um comando existente</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../"
+                        title="previous chapter">Console</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../../reference/"
+                        title="next chapter">Documentos de Referência</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/components/console/introduction.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../reference/" title="Documentos de Referência"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Console"
+             >previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Os Componentes</a> &raquo;</li>
+          <li><a href="../" >Console</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

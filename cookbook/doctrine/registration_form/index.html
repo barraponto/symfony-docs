@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Como Implementar um Formulário Simples de Registro &mdash; Symfony2 Framework Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Symfony2 Framework Documentation  documentation" href="../../../" />
+    <link rel="up" title="Doctrine" href="../" />
+    <link rel="next" title="Formulário" href="../../form/" />
+    <link rel="prev" title="Como Registrar Funções DQL Personalizadas" href="../custom_dql_functions/" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../form/" title="Formulário"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../custom_dql_functions/" title="Como Registrar Funções DQL Personalizadas"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" accesskey="U">Doctrine</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="como-implementar-um-formulario-simples-de-registro">
+<span id="index-0"></span><h1>Como Implementar um Formulário Simples de Registro<a class="headerlink" href="#como-implementar-um-formulario-simples-de-registro" title="Permalink to this headline">¶</a></h1>
+<p>Alguns formulários possuem campos extras cujos valores não precisam ser armazenados no
+banco de dados. Por exemplo, você pode criar um formulário de registo com alguns
+campos extras (como um campo checkbox &#8220;termos de aceite&#8221;) e incorporar o formulário
+que realmente armazena as informações da conta.</p>
+<div class="section" id="o-modelo-user">
+<h2>O modelo <tt class="docutils literal"><span class="pre">User</span></tt><a class="headerlink" href="#o-modelo-user" title="Permalink to this headline">¶</a></h2>
+<p>Você tem uma entidade simples <tt class="docutils literal"><span class="pre">User</span></tt> mapeada para o banco de dados:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/AccountBundle/Entity/User.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\AccountBundle\Entity</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Doctrine\ORM\Mapping</span> <span class="k">as</span> <span class="nx">ORM</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Validator\Constraints</span> <span class="k">as</span> <span class="nx">Assert</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @ORM\Entity</span>
+<span class="sd"> * @UniqueEntity(fields=&quot;email&quot;, message=&quot;Email already taken&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @ORM\Id</span>
+<span class="sd">     * @ORM\Column(type=&quot;integer&quot;)</span>
+<span class="sd">     * @ORM\GeneratedValue(strategy=&quot;AUTO&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * @ORM\Column(type=&quot;string&quot;, length=255)</span>
+<span class="sd">     * @Assert\NotBlank()</span>
+<span class="sd">     * @Assert\Email()</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$email</span><span class="p">;</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * @ORM\Column(type=&quot;string&quot;, length=255)</span>
+<span class="sd">     * @Assert\NotBlank()</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$plainPassword</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getId</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getEmail</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setEmail</span><span class="p">(</span><span class="nv">$email</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=</span> <span class="nv">$email</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getPlainPassword</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">plainPassword</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setPlainPassword</span><span class="p">(</span><span class="nv">$password</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">plainPassword</span> <span class="o">=</span> <span class="nv">$password</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Esta entidade <tt class="docutils literal"><span class="pre">User</span></tt> contém três campos, e dois deles (<tt class="docutils literal"><span class="pre">email</span></tt> e
+<tt class="docutils literal"><span class="pre">plainPassword</span></tt>) devem ser exibos no formulário. A propriedade e-mail deve ser única
+no banco de dados, isto é aplicado através da adição da validação no topo
+da classe.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Se você quiser integrar este <tt class="docutils literal"><span class="pre">User</span></tt> com o sistema de segurança, você precisa
+implementar a <a class="reference internal" href="../../../book/security/#book-security-user-entity"><em>UserInterface</em></a> do
+componente de segurança.</p>
+</div>
+</div>
+<div class="section" id="criando-um-formulario-para-o-modelo">
+<h2>Criando um Formulário para o Modelo<a class="headerlink" href="#criando-um-formulario-para-o-modelo" title="Permalink to this headline">¶</a></h2>
+<p>Em seguida, crie o formulário para o modelo <tt class="docutils literal"><span class="pre">User</span></tt>:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/AccountBundle/Form/Type/UserType.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\AccountBundle\Form\Type</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Component\Form\AbstractType</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Form\FormBuilderInterface</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\OptionsResolver\OptionsResolverInterface</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">UserType</span> <span class="k">extends</span> <span class="nx">AbstractType</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">buildForm</span><span class="p">(</span><span class="nx">FormBuilderInterface</span> <span class="nv">$builder</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$options</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$builder</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">);</span>
+        <span class="nv">$builder</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;plainPassword&#39;</span><span class="p">,</span> <span class="s1">&#39;repeated&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span>
+           <span class="s1">&#39;first_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;second_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;confirm&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span>
+        <span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setDefaultOptions</span><span class="p">(</span><span class="nx">OptionsResolverInterface</span> <span class="nv">$resolver</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$resolver</span><span class="o">-&gt;</span><span class="na">setDefaults</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+            <span class="s1">&#39;data_class&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Acme\AccountBundle\Entity\User&#39;</span>
+        <span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getName</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="s1">&#39;user&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Há apenas dois campos:<tt class="docutils literal"><span class="pre">email</span></tt> e <tt class="docutils literal"><span class="pre">plainPassword</span></tt> (repetido para confirmar
+a senha digitada). A opção <tt class="docutils literal"><span class="pre">data_class</span></tt> diz ao formulário o nome da
+classe de dados (ou seja, a sua entidade <tt class="docutils literal"><span class="pre">User</span></tt>).</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Para explorar mais sobre o componente de formulário, leia <a class="reference internal" href="../../../book/forms/"><em>Formulários</em></a>.</p>
+</div>
+</div>
+<div class="section" id="incorporando-o-formulario-do-user-no-formulario-de-registro">
+<h2>Incorporando o Formulário do User no Formulário de Registro<a class="headerlink" href="#incorporando-o-formulario-do-user-no-formulario-de-registro" title="Permalink to this headline">¶</a></h2>
+<p>O formulário que você vai usar para a página de registo não será o mesmo usado
+para modificar o <tt class="docutils literal"><span class="pre">User</span></tt> (ou seja, <tt class="docutils literal"><span class="pre">UserType</span></tt>). O formulário de registro
+conterá novos campos como o &#8220;aceitar os termos&#8221;, cujo valor não
+será armazenado no banco de dados.</p>
+<p>Comece criando uma classe simples que representa o &#8220;registro&#8221;:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/AccountBundle/Form/Model/Registration.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\AccountBundle\Form\Model</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Component\Validator\Constraints</span> <span class="k">as</span> <span class="nx">Assert</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Acme\AccountBundle\Entity\User</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Registration</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @Assert\Type(type=&quot;Acme\AccountBundle\Entity\User&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$user</span><span class="p">;</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * @Assert\NotBlank()</span>
+<span class="sd">     * @Assert\True()</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$termsAccepted</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setUser</span><span class="p">(</span><span class="nx">User</span> <span class="nv">$user</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">user</span> <span class="o">=</span> <span class="nv">$user</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getUser</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">user</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getTermsAccepted</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">termsAccepted</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setTermsAccepted</span><span class="p">(</span><span class="nv">$termsAccepted</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">termsAccepted</span> <span class="o">=</span> <span class="p">(</span><span class="nx">Boolean</span><span class="p">)</span> <span class="nv">$termsAccepted</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Em seguida, crie o formulário para este modelo <tt class="docutils literal"><span class="pre">Registration</span></tt>:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/AccountBundle/Form/Type/RegistrationType.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\AccountBundle\Form\Type</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Component\Form\AbstractType</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\Form\FormBuilderInterface</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">RegistrationType</span> <span class="k">extends</span> <span class="nx">AbstractType</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">buildForm</span><span class="p">(</span><span class="nx">FormBuilderInterface</span> <span class="nv">$builder</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$options</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$builder</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">UserType</span><span class="p">());</span>
+        <span class="nv">$builder</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span>
+            <span class="s1">&#39;terms&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;checkbox&#39;</span><span class="p">,</span>
+            <span class="k">array</span><span class="p">(</span><span class="s1">&#39;property_path&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;termsAccepted&#39;</span><span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getName</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="s1">&#39;registration&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Você não precisa usar um método especial para incorporar o formulário <tt class="docutils literal"><span class="pre">UserType</span></tt>.
+Um formulário também é um campo - logo, você pode adicionar ele como qualquer
+outro campo, com a certeza de que a propriedade <tt class="docutils literal"><span class="pre">Registration.user</span></tt> irá manter uma
+instância da classe <tt class="docutils literal"><span class="pre">User</span></tt>.</p>
+</div>
+<div class="section" id="manuseando-a-submissao-do-formulario">
+<h2>Manuseando a Submissão do Formulário<a class="headerlink" href="#manuseando-a-submissao-do-formulario" title="Permalink to this headline">¶</a></h2>
+<p>Em seguida, você precisa de um controlador para lidar com o formulário. Comece criando um
+controlador simples para exibir o formulário de registro:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="c1">// src/Acme/AccountBundle/Controller/AccountController.php</span>
+<span class="k">namespace</span> <span class="nx">Acme\AccountBundle\Controller</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Symfony\Bundle\FrameworkBundle\Controller\Controller</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Symfony\Component\HttpFoundation\Response</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Acme\AccountBundle\Form\Type\RegistrationType</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Acme\AccountBundle\Form\Model\Registration</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">AccountController</span> <span class="k">extends</span> <span class="nx">Controller</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">registerAction</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$form</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createForm</span><span class="p">(</span>
+            <span class="k">new</span> <span class="nx">RegistrationType</span><span class="p">(),</span>
+            <span class="k">new</span> <span class="nx">Registration</span><span class="p">()</span>
+        <span class="p">);</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span>
+            <span class="s1">&#39;AcmeAccountBundle:Account:register.html.twig&#39;</span><span class="p">,</span>
+            <span class="k">array</span><span class="p">(</span><span class="s1">&#39;form&#39;</span> <span class="o">=&gt;</span> <span class="nv">$form</span><span class="o">-&gt;</span><span class="na">createView</span><span class="p">())</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>e o seu template:</p>
+<div class="highlight-html+jinja"><div class="highlight"><pre><span class="c">{# src/Acme/AccountBundle/Resources/views/Account/register.html.twig #}</span>
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">path</span><span class="o">(</span><span class="s1">&#39;create&#39;</span><span class="o">)</span><span class="cp">}}</span><span class="s">&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span> <span class="cp">{{</span> <span class="nv">form_enctype</span><span class="o">(</span><span class="nv">form</span><span class="o">)</span> <span class="cp">}}</span><span class="nt">&gt;</span>
+    <span class="cp">{{</span> <span class="nv">form_widget</span><span class="o">(</span><span class="nv">form</span><span class="o">)</span> <span class="cp">}}</span>
+
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+</pre></div>
+</div>
+<p>Por fim, adicione o controlador que lida com a submissão do formulário. Ele realiza
+a validação e salva os dados no banco de dados:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="k">public</span> <span class="k">function</span> <span class="nf">createAction</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="nv">$em</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getDoctrine</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getEntityManager</span><span class="p">();</span>
+
+    <span class="nv">$form</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createForm</span><span class="p">(</span><span class="k">new</span> <span class="nx">RegistrationType</span><span class="p">(),</span> <span class="k">new</span> <span class="nx">Registration</span><span class="p">());</span>
+
+    <span class="nv">$form</span><span class="o">-&gt;</span><span class="na">bind</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getRequest</span><span class="p">());</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$form</span><span class="o">-&gt;</span><span class="na">isValid</span><span class="p">())</span> <span class="p">{</span>
+        <span class="nv">$registration</span> <span class="o">=</span> <span class="nv">$form</span><span class="o">-&gt;</span><span class="na">getData</span><span class="p">();</span>
+
+        <span class="nv">$em</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$registration</span><span class="o">-&gt;</span><span class="na">getUser</span><span class="p">());</span>
+        <span class="nv">$em</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redirect</span><span class="p">(</span><span class="o">...</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">render</span><span class="p">(</span>
+        <span class="s1">&#39;AcmeAccountBundle:Account:register.html.twig&#39;</span><span class="p">,</span>
+        <span class="k">array</span><span class="p">(</span><span class="s1">&#39;form&#39;</span> <span class="o">=&gt;</span> <span class="nv">$form</span><span class="o">-&gt;</span><span class="na">createView</span><span class="p">())</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Pronto! O seu formulário agora valida e permite que você salve o objeto
+<tt class="docutils literal"><span class="pre">User</span></tt> no banco de dados. O checkbox extra <tt class="docutils literal"><span class="pre">terms</span></tt> na classe de modelo
+<tt class="docutils literal"><span class="pre">Registration</span></tt> é utilizado durante a validação, mas não é utilizado posteriormente
+quando salvamos o usuário no banco de dados.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Como Implementar um Formulário Simples de Registro</a><ul>
+<li><a class="reference internal" href="#o-modelo-user">O modelo <tt class="docutils literal"><span class="pre">User</span></tt></a></li>
+<li><a class="reference internal" href="#criando-um-formulario-para-o-modelo">Criando um Formulário para o Modelo</a></li>
+<li><a class="reference internal" href="#incorporando-o-formulario-do-user-no-formulario-de-registro">Incorporando o Formulário do User no Formulário de Registro</a></li>
+<li><a class="reference internal" href="#manuseando-a-submissao-do-formulario">Manuseando a Submissão do Formulário</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../custom_dql_functions/"
+                        title="previous chapter">Como Registrar Funções DQL Personalizadas</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../form/"
+                        title="next chapter">Formulário</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/cookbook/doctrine/registration_form.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../form/" title="Formulário"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../custom_dql_functions/" title="Como Registrar Funções DQL Personalizadas"
+             >previous</a> |</li>
+        <li><a href="../../../">Symfony2 Framework Documentation  documentation</a> &raquo;</li>
+          <li><a href="../../" >Cookbook</a> &raquo;</li>
+          <li><a href="../" >Doctrine</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
